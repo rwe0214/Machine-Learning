@@ -1,0 +1,6 @@
+*.out
+*.o
+*.txt
+*.exe
+.DS_Store
+linear_regression
