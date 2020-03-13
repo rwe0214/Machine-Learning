@@ -17,23 +17,42 @@ typedef struct {
 void rio_readinitb(rio_t *rp, int fd);
 static ssize_t rio_read(rio_t *rp, char *usrbuf, size_t n);
 ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen);
-int fread_val(double ***x, double ***y);
+int fread_val(double ***x, double ***y, int n);
 
 
-int main(){
-	matrix *A, *b;
-	int m;
+int main(int argc, char **argv){
+	if(argc != 3){
+		fprintf(stderr, "usage: ./linear_regression [n] [lambda]\n");
+		return EXIT_FAILURE;
+	}
+
+	matrix *A, *b, *At, *AtA, *lI, *W, *rlse;
+	int m, n = atoi(argv[1]);
+	double lambda = atof(argv[2]);
 	double **x, **y;
 
-	m = fread_val(&x, &y);
+	m = fread_val(&x, &y, n);
 	A = new_matrix();
-	set_matrix(A, x, m, 2);
-	print_matrix(A);
+	set_matrix(A, x, m, n);
 	b = new_matrix();
-	set_matrix(b, y, m, 1);
-	print_matrix(b);
-	
-	
+	set_matrix(b, y, m, 1);	
+	At = transpose_matrix(A);
+	AtA = multi_matrix(At, A);
+	lI =new_matrix();
+	set_matrixI(lI, lambda, m);
+	W = add_matrix(AtA, lI);
+	b = multi_matrix(At, b);
+	rlse = solve_linear_sys(W, b);
+
+	print_matrix(rlse);
+
+	free_matrix(A);
+	free_matrix(b);
+	free_matrix(At);
+	free_matrix(AtA);
+	free_matrix(lI);
+	free_matrix(W);
+	free_matrix(rlse);
 	return 0;
 }
 
@@ -91,7 +110,7 @@ ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen)
     return n;
 }
 
-int fread_val(double ***x, double ***y){
+int fread_val(double ***x, double ***y, int n){
 	
 	size_t buf_size = 0;
 	char *buf = malloc(buf_size);
@@ -110,14 +129,16 @@ int fread_val(double ***x, double ***y){
 	fseek(fp, 0, SEEK_SET);
 	*x = (double **)malloc(m * sizeof(double *));
 	for(int i=0; i< m; i++)
-		(*x)[i] = (double *)malloc(2 * sizeof(double));
+		(*x)[i] = (double *)malloc(n * sizeof(double));
 	*y = (double **)malloc(m * sizeof(double));
 	for(int i=0; i< m; i++)
 		(*y)[i] = (double *)malloc(sizeof(double));
 
 	for(int i=0; i<m; i++){
-		fscanf(fp, "%lf,%lf\n", &(*x)[i][0], &(*y)[i][0]);
-		(*x)[i][1] = 1.0;
+		fscanf(fp, "%lf,%lf\n", &(*x)[i][n-2], &(*y)[i][0]);
+		(*x)[i][n-1] = 1.0;
+		for(int j=n-3; j>=0; j--)
+			(*x)[i][j] = (*x)[i][j+1] * (*x)[i][n-2];
 	}
 
 	fclose(fp);

@@ -39,6 +39,23 @@ void set_matrix(matrix *a, double **val, int m, int n){
 			a->ele[i][j] = val[i][j];
 }
 
+void set_matrixI(matrix *a, double k, int n){
+	if(!a){
+		printf("The matrix could not be empty.\n");
+		return;
+	}
+	for(int i=0; i<a->row_len; i++)
+		free(a->ele[i]);
+		
+	a->row_len = a->col_len = n;
+	a->ele = (double **)malloc(a->row_len * sizeof(double *));
+	for(int i=0; i< a->row_len; i++)
+		a->ele[i] = (double *)malloc(a->col_len * sizeof(double));
+	
+	for(int i=0; i<a->row_len; i++)
+		a->ele[i][i] = k;
+}
+
 /*clear the ele of matrix*/
 void clear_matrix(matrix *a){
 	for(int i=0; i<a->row_len; i++)
@@ -67,11 +84,21 @@ void print_matrix(matrix *a){
     printf("[\n");
 	for(int i=0; i<a->row_len; i++){
 		for(int j=0; j<a->col_len-1; j++)
-			printf("\t%.20f\t,", a->ele[i][j]);
-        printf("\t%.20f\t", a->ele[i][a->col_len-1]);
+			printf("\t%.15f\t,", a->ele[i][j]);
+        printf("\t%.15f\t", a->ele[i][a->col_len-1]);
 		printf(" \\ \n");
 	}
     printf("]\n");
+}
+
+matrix *add_matrix(matrix *a, matrix *b){
+	matrix *c;
+	c = new_matrix_size(a->row_len, a->col_len);
+
+	for(int i=0; i<a->row_len; i++)
+		for(int j=0; j<a->col_len; j++)
+			c->ele[i][j] = a->ele[i][j] + b->ele[i][j];
+	return c;
 }
 
 matrix *transpose_matrix(matrix *a){
@@ -94,6 +121,71 @@ matrix *multi_matrix(matrix *a, matrix *b){
 	for(int i=0; i<sum->row_len; i++)
 		for(int j=0; j<sum->col_len; j++)
 			for(int k=0; k<a->col_len; k++)
-				sum->ele[i][j] += (a->ele[i][k] * b->ele[k][i]);
+				sum->ele[i][j] += (a->ele[i][k] * b->ele[k][j]);
 	return sum;
+}
+
+void LU_decompose(matrix *a, matrix **l, matrix **u){
+	if(a->row_len != a->col_len){
+		printf("The martix is not square.\n");
+		return ;
+	}
+	int n = a->row_len;
+	//if(!(*l))
+		*l = new_matrix_size(n, n);
+	//if(!(*u))
+		*u = new_matrix_size(n, n);
+
+	for(int i=0; i<n; i++){
+		(*u)->ele[0][i] = a->ele[0][i];
+		(*l)->ele[i][0] = a->ele[i][0]/(*u)->ele[0][0];
+		(*l)->ele[i][i] = 1.0;
+	}
+
+	double sum;
+	for(int i=1; i<n; i++){
+		for(int j=i; j<n; j++){
+			sum = 0.0;
+			for(int k=0; k<i; k++)
+				sum += (*l)->ele[i][k] * (*u)->ele[k][j];
+			(*u)->ele[i][j] = a->ele[i][j] - sum;
+		}
+		/*Need to get U matrix first!*/
+		for(int j=i; j<n; j++){
+			sum = 0.0;
+			for(int k=0; k<i; k++)
+				sum += (*l)->ele[j][k] * (*u)->ele[k][i];	
+			(*l)->ele[j][i] = (a->ele[j][i] - sum)/(*u)->ele[i][i];
+		}
+	}
+	return;
+}
+/*Only work at square matrix A*/
+matrix *solve_linear_sys(matrix *A, matrix *b){
+	/* Ax = LUx = b
+	 * let y = Ux
+	 * Ly = b, y = L^(-1)b
+	 * solve Ux = y
+	 */
+	if(A->row_len != A->col_len){
+		printf("A need to be square matrix!\n");
+		return NULL;
+	}
+	matrix *L_i, *U;
+	LU_decompose(A, &L_i, &U);
+	for(int i=0; i<L_i->row_len; i++)
+		for(int j=0; j<i; j++)
+			L_i->ele[i][j] *= -1;
+	matrix *y = multi_matrix(L_i, b);
+	matrix *x = new_matrix_size(A->col_len, 1);
+	
+	double sum;
+	x->ele[x->row_len-1][0] = y->ele[y->row_len-1][0] / U->ele[U->row_len-1][U->row_len-1];
+	for(int i=x->row_len-2; i>=0; i--){
+		sum = 0.0;
+		for(int j=x->row_len-1; j>i; j--)
+			sum += U->ele[i][j]*x->ele[j][0];
+		x->ele[i][0] = (y->ele[i][0]-sum)/U->ele[i][i];
+	}
+	return x;
 }
