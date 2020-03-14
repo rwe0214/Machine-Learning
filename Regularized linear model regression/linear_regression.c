@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +8,8 @@
 #include "matrix.h"
 
 int fread_val(double ***x, double ***y, int n);
+int fout_result(matrix *result, char *filename);
+void error(matrix *a, double **x, double **y, int m, char *method);
 
 int main(int argc, char **argv)
 {
@@ -23,12 +26,13 @@ int main(int argc, char **argv)
     /*
      * rLSE method
      * min | b - Ax |^2
-     * (AtA - lI)x = Atb
+     * (AtA + lI)x = Atb
+     * Wx = Atb
      * LUx = Atb
      * Ly = Atb
      * y = L^(-1)Atb
      * Ux = y
-    */
+     */
     m = fread_val(&x, &y, n);
     A = new_matrix();
     set_matrix(A, m, n, x);
@@ -42,14 +46,13 @@ int main(int argc, char **argv)
     Atb = multi_matrix(At, b);
     rlse = solve_linear_sys(W, Atb);
 
-    print_matrix(rlse);
     /*
      * Newton's Method
      * f(x) = | b - Ax |^2
      * f'(x) = 2AtAx - 2Atb
      * f"(x) = 2AtA
      * x_(n+1) = x_n - (AtA)^(-1)*(AtAx_n - Atb)
-    */
+     */
     matrix *X = new_matrix_size(n, 1);
     for (int i = 0; i < n; i++)
         X->ele[i][0] = 0.0;
@@ -63,7 +66,12 @@ int main(int argc, char **argv)
         df = sub_matrix(multi_matrix(AtA, X), Atb);
         Xn = sub_matrix(X, multi_matrix(hf, df));
     }
-    print_matrix(Xn);
+
+    /*Output data*/
+    error(rlse, x, y, m, "LSE");
+    error(Xn, x, y, m, "Newton's Method");
+    fout_result(rlse, "output/LSE.txt");
+    fout_result(Xn, "output/newton.txt");
 
     free_matrix(A);
     free_matrix(b);
@@ -85,7 +93,7 @@ int fread_val(double ***x, double ***y, int n)
     size_t buf_size = 0;
     char *buf = malloc(buf_size);
     int m = 0;
-    char *FILENAME = "input.txt";
+    char *FILENAME = "datapoint.data";
 
     FILE *fp = fopen(FILENAME, "r");
     if (!fp) {
@@ -113,4 +121,39 @@ int fread_val(double ***x, double ***y, int n)
 
     fclose(fp);
     return m;
+}
+
+int fout_result(matrix *result, char *filename)
+{
+    FILE *fp = fopen(filename, "w");
+    if (!fp) {
+        fprintf(stderr, "Error opening file '%s'\n", filename);
+        return EXIT_FAILURE;
+    }
+    if (result->row_len > 1) {
+        for (int i = 0; i < result->row_len - 1; i++)
+            fprintf(fp, "%.15f,", result->ele[i][0]);
+    }
+    fprintf(fp, "%.15f\n", result->ele[result->row_len - 1][0]);
+    return 0;
+}
+
+void error(matrix *a, double **x, double **y, int m, char *method)
+{
+    double sum = 0.0, tmp = 0.0;
+    printf("\n%s:\n", method);
+    printf("Fitting Line: ");
+    printf("%.15fX^%d ", a->ele[0][0], a->row_len - 1);
+    for (int i = 1; i < a->row_len - 1; i++)
+        printf("+ %.15fX^%d ", a->ele[i][0], a->row_len - i - 1);
+    printf("+ %.15f\n", a->ele[a->row_len - 1][0]);
+
+    for (int i = 0; i < m; i++) {
+        tmp = 0.0;
+        for (int j = 0; j < a->row_len; j++)
+            tmp += a->ele[j][0] * pow(x[i][0], a->row_len - j - 1);
+        sum += fabs(y[i][0] - tmp);
+    }
+    sum /= m;
+    printf("Total error: %.15f\n", sum);
 }

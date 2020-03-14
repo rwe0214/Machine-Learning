@@ -197,7 +197,7 @@ void LU_decompose(matrix *a, matrix **l, matrix **u)
 /*Only work at square matrix A*/
 matrix *solve_linear_sys(matrix *A, matrix *b)
 {
-    /* Ax = LUx = b
+    /* Ax = (LU)x = b
      * let y = Ux
      * Ly = b, y = L^(-1)b
      * solve Ux = y
@@ -234,7 +234,6 @@ matrix *minor_matrix(matrix *a, int row, int col)
     for (int i = 0; i < a->row_len; i++)
         for (int j = 0; j < a->col_len; j++)
             if (i != row && j != col) {
-                //				printf("%d, %d\t%d, %d\n", i, j, r, l);
                 m->ele[r][l++] = a->ele[i][j];
                 if (l == m->col_len) {
                     l = 0;
