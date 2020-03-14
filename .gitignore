@@ -2,5 +2,7 @@
 *.o
 *.txt
 *.exe
+*.data
+output/
 .DS_Store
 linear_regression
