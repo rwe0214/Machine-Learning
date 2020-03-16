@@ -98,7 +98,7 @@ int fread_val(double ***x, double ***y, int n)
     FILE *fp = fopen(FILENAME, "r");
     if (!fp) {
         fprintf(stderr, "Error opening file '%s'\n", FILENAME);
-        return EXIT_FAILURE;
+        exit(-1);
     }
 
     while (getline(&buf, &buf_size, fp) != -1)
