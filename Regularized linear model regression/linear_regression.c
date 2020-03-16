@@ -151,7 +151,7 @@ void error(matrix *a, double **x, double **y, int m, char *method)
     for (int i = 0; i < m; i++) {
         tmp = 0.0;
         for (int j = 0; j < a->row_len; j++)
-            tmp += a->ele[j][0] * pow(x[i][0], a->row_len - j - 1);
+            tmp += a->ele[j][0] * x[i][j];
         sum += fabs(y[i][0] - tmp);
     }
     sum /= m;
