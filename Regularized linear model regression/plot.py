@@ -9,7 +9,7 @@ newton = np.loadtxt('output/newton.txt', delimiter=',')
 upper = max(x)
 lower = min(x)
 
-x1 = np.arange(lower-1, upper+1)
+x1 = np.arange(lower-2, upper+2)
 y1 = 0.0
 for i, cof in enumerate(lse):
     y1 += (cof * (x1 ** (len(lse)-i-1)))
