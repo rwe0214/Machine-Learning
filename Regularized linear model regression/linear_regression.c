@@ -152,8 +152,8 @@ void error(matrix *a, double **x, double **y, int m, char *method)
         tmp = 0.0;
         for (int j = 0; j < a->row_len; j++)
             tmp += a->ele[j][0] * x[i][j];
-        sum += fabs(y[i][0] - tmp);
+        sum += pow((y[i][0] - tmp), 2);
     }
-    sum /= m;
-    printf("Total error: %.15f\n", sum);
+    /* MSE = sigma((y-y')^2)/(m-2) */
+    printf("Total error (MSE): %.15f\n", sum);
 }
