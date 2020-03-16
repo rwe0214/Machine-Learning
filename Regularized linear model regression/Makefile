@@ -7,7 +7,7 @@ all: linear_regression
 	$(CC) -c $(CFLAGS) $<
 
 linear_regression: matrix.o linear_regression.o
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lm
 
 # If the first argument is "run"...
 ifeq (run,$(firstword $(MAKECMDGOALS)))
