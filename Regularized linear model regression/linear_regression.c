@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "matrix.h"
@@ -125,6 +126,9 @@ int fread_val(double ***x, double ***y, int n)
 
 int fout_result(matrix *result, char *filename)
 {
+    if (!!access("output", 0))
+        mkdir("output", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+
     FILE *fp = fopen(filename, "w");
     if (!fp) {
         fprintf(stderr, "Error opening file '%s'\n", filename);
