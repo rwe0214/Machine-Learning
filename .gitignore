@@ -3,6 +3,12 @@
 *.txt
 *.exe
 *.data
-output/
 .DS_Store
+
+# Regularized linear model regression
+output/
 linear_regression
+
+# Naive Bayes classifier
+mnist/
+naive_bayes_classifier
