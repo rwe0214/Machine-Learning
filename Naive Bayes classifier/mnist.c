@@ -1,34 +1,27 @@
 #include "mnist.h"
 
-#ifndef BIG_ENDIAN
-#define BIG_ENDIAN 0
-#endif
-#ifndef LITTLE_ENDIAN
-#define LITTLE_ENDIAN 1
-#endif
+#include <errno.h>
+#include <fcntl.h>
+#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#define LEN_LABEL_INFO 2
-#define LEN_IMAGE_INFO 4
+int mnist_train_label_info[LEN_LABEL_INFO];
+int mnist_train_image_info[LEN_IMAGE_INFO];
+int mnist_test_label_info[LEN_LABEL_INFO];
+int mnist_test_image_info[LEN_IMAGE_INFO];
 
-#define NUM_TRAIN 60000
-#define NUM_TEST 10000
-#define SIZE 784  // 28*28
+double mnist_count_label[10];
 
-#define PATH_TRAIN_LABEL "./mnist/train-labels-idx1-ubyte"
-#define PATH_TRAIN_IMAGE "./mnist/train-images-idx3-ubyte"
-#define PATH_TEST_LABEL "./mnist/t10k-labels-idx1-ubyte"
-#define PATH_TEST_IMAGE "./mnist/t10k-images-idx3-ubyte"
+uint8_t mnist_train_label[NUM_MNIST_TRAIN][1];
+uint8_t mnist_train_image[NUM_MNIST_TRAIN][SIZE_MNIST];
+uint8_t mnist_test_label[NUM_MNIST_TEST][1];
+uint8_t mnist_test_image[NUM_MNIST_TEST][SIZE_MNIST];
 
-int train_label_info[LEN_LABEL_INFO];
-int train_image_info[LEN_IMAGE_INFO];
-int test_label_info[LEN_LABEL_INFO];
-int test_image_info[LEN_IMAGE_INFO];
-
-uint8_t train_label[NUM_TRAIN][1];
-uint8_t train_image[NUM_TRAIN][SIZE];
-uint8_t test_label[NUM_TEST][1];
-uint8_t test_image[NUM_TEST][SIZE];
-
+double mnist_train_label_mean[10][SIZE_MNIST];
+double mnist_train_label_varience[10][SIZE_MNIST];
 int is_little_endian()
 {
     uint16_t test = 0x0001;
@@ -89,6 +82,44 @@ void swap_bytes(uint8_t *ptr, size_t len)
         swap(ptr + i, ptr + len - 1 - i);
 }
 
+/*void uint8_t_to_double(int size_data, uint8_t data[][SIZE_MNIST]){
+    for(int i=0; i<size_data; i++)
+        for(int j=0; j<SIZE_MNIST; j++)
+            mnist_train_data_double
+}*/
+
+void statistic_mnist_train_data()
+{
+    /*get mean*/
+    for (int i = 0; i < NUM_MNIST_TRAIN; i++) {
+        int label = mnist_train_label[i][0];
+        for (int j = 0; j < SIZE_MNIST; j++) {
+            mnist_train_label_mean[label][j] += mnist_train_image[i][j];
+        }
+        mnist_count_label[label]++;
+    }
+
+
+
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < SIZE_MNIST; j++)
+            mnist_train_label_mean[i][j] /= mnist_count_label[i];
+
+    /*get varience*/
+    for (int i = 0; i < NUM_MNIST_TRAIN; i++) {
+        int label = mnist_train_label[i][0];
+        for (int j = 0; j < SIZE_MNIST; j++) {
+            mnist_train_label_varience[label][j] += pow(
+                mnist_train_image[i][j] - mnist_train_label_mean[label][j], 2);
+        }
+    }
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < SIZE_MNIST; j++) {
+            mnist_train_label_varience[i][j] =
+                sqrt(mnist_train_label_varience[i][j] / mnist_count_label[i]);
+        }
+}
+
 void read_mnist(char *path,
                 int len_info,
                 int data_info[],
@@ -111,29 +142,52 @@ void read_mnist(char *path,
 
     for (int i = 0; i < num_data; i++) {
         read_or_fail(fd, data[i], size * sizeof(uint8_t));
-        if (len_info == 2) {
-            printf("%c\n", data[i][0] + 48);
-        } else {
-            for (int j = 0; j < size; j++) {
-                if (j % 28 == 0)
-                    printf("\n");
-                if (data[i][j] >= 0 && data[i][j] <= 128)
-                    printf("0 ");
-                else
-                    printf("1 ");
-            }
-        }
     }
+}
+
+int get_MNIST_train_size()
+{
+    return SIZE_MNIST;
 }
 
 void load_mnist()
 {
-    read_mnist(PATH_TRAIN_LABEL, LEN_LABEL_INFO, train_label_info, NUM_TRAIN, 1,
-               train_label);
-    read_mnist(PATH_TRAIN_IMAGE, LEN_IMAGE_INFO, train_image_info, NUM_TRAIN,
-               SIZE, train_image);
-    read_mnist(PATH_TEST_LABEL, LEN_LABEL_INFO, test_label_info, NUM_TEST, 1,
-               test_label);
-    read_mnist(PATH_TEST_IMAGE, LEN_IMAGE_INFO, test_image_info, NUM_TEST, SIZE,
-               test_image);
+    read_mnist(PATH_MNISTTRAIN_LABEL, LEN_LABEL_INFO, mnist_train_label_info,
+               NUM_MNIST_TRAIN, 1, mnist_train_label);
+    read_mnist(PATH_MNISTTRAIN_IMAGE, LEN_IMAGE_INFO, mnist_train_image_info,
+               NUM_MNIST_TRAIN, SIZE_MNIST, mnist_train_image);
+    read_mnist(PATH_MNISTTEST_LABEL, LEN_LABEL_INFO, mnist_test_label_info,
+               NUM_MNIST_TEST, 1, mnist_test_label);
+    read_mnist(PATH_MNISTTEST_IMAGE, LEN_IMAGE_INFO, mnist_test_image_info,
+               NUM_MNIST_TEST, SIZE_MNIST, mnist_test_image);
+    statistic_mnist_train_data();
+}
+
+mnist_info *get_mnist_info()
+{
+    mnist_info *info = malloc(sizeof(mnist_info));
+
+    info->train_size = NUM_MNIST_TRAIN;
+    info->test_size = NUM_MNIST_TEST;
+    info->label_class_size = 10;
+    info->image_size = 28 * 28;
+
+    return info;
+}
+
+mnist_data *get_mnist_data()
+{
+    mnist_data *data = malloc(sizeof(mnist_data));
+    for (int i = 0; i < NUM_MNIST_TRAIN; i++)
+        for (int j = 0; j < SIZE_MNIST; j++)
+            data->train_image[i][j] = mnist_train_image[i][j];
+    for (int i = 0; i < NUM_MNIST_TRAIN; i++)
+        data->train_label[i][0] = mnist_train_label[i][0];
+    for (int i = 0; i < NUM_MNIST_TEST; i++)
+        for (int j = 0; j < SIZE_MNIST; j++)
+            data->test_image[i][j] = mnist_test_image[i][j];
+    for (int i = 0; i < NUM_MNIST_TEST; i++)
+        data->train_label[i][0] = mnist_train_label[i][0];
+
+    return data;
 }

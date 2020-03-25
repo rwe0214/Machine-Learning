@@ -1,8 +1,7 @@
-#include <stdio.h>
 #include "mnist.h"
+#include "naive_bayes.h"
 
 int main()
 {
-    load_mnist();
     return 0;
 }
