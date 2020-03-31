@@ -9,5 +9,8 @@ all: naive_bayes_classifier
 naive_bayes_classifier: mnist.o naive_bayes.o main.o
 	$(CC) -o $@ $^ -lm
 
+run:
+	./naive_bayes_classifier
+
 clean:
 	$(RM) *.o naive_bayes_classifier
