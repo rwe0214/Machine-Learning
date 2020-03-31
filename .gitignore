@@ -3,6 +3,7 @@
 *.txt
 *.exe
 *.data
+*.png
 .DS_Store
 
 # Regularized linear model regression
@@ -12,3 +13,7 @@ linear_regression
 # Naive Bayes classifier
 mnist/
 naive_bayes_classifier
+
+# Online learning
+output/
+online_learning

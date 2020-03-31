@@ -32,10 +32,14 @@ typedef struct MNIST_INFO {
 } mnist_info;
 
 typedef struct MNIST_DATA {
-    uint8_t train_image[NUM_MNIST_TRAIN][SIZE_MNIST];
+    /*uint8_t train_image[NUM_MNIST_TRAIN][SIZE_MNIST];
     uint8_t train_label[NUM_MNIST_TRAIN][1];
     uint8_t test_image[NUM_MNIST_TEST][SIZE_MNIST];
-    uint8_t test_label[NUM_MNIST_TEST][1];
+    uint8_t test_label[NUM_MNIST_TEST][1];*/
+    uint8_t **train_image;
+    uint8_t *train_label;
+    uint8_t **test_image;
+    uint8_t *test_label;
 } mnist_data;
 
 int is_little_endian();
@@ -54,5 +58,7 @@ void read_mnist(char *path,
 void load_mnist();
 mnist_info *get_mnist_info();
 mnist_data *get_mnist_data();
+void free_mnist_info(mnist_info *info);
+void free_mnist_data(mnist_data *data);
 
 #endif
