@@ -83,13 +83,13 @@ void online_learning()
     /*read config.txt to get a0 and b0*/
     while (getline(&line_buf, &line_buf_size, f_config) > 0) {
         if (print++ > 0)
-            printf("\n\n===============================\n\n");
+            printf("\n===============================\n\n");
         sscanf(line_buf, "%d,%d\n", &a[0], &b[0]);
         printf("a0 = %d, b0 = %d\n", a[0], b[0]);
         /*run 11 cases*/
         for (int i = 1; i <= line_num; i++) {
             sprintf(out, "output/a%d_b%d_%d.txt", a[0], b[0], i);
-            
+
             /*for plotting .png*/
             FILE *fp = fopen(out, "w");
             int m = 0, n;
@@ -103,19 +103,17 @@ void online_learning()
                 fprintf(fp, "%.2f,%.10f\n", (double) k / 100.0,
                         beta_distribution((double) k / 100.0, a[i], b[i]));
             p[i - 1] = likelihood(m, n, (double) m / (double) n);
+            printf("case %d: %s\n", i, data[i - 1]);
+
+            /*output*/
+            printf("Likelihood(MLE): %.17f\n", p[i - 1]);
+            printf("Beta prior:\t a=%d, b=%d\n", a[i - 1], b[i - 1]);
+            if (i == line_num)
+                printf("Beta posterior:\t a=%d, b=%d\n", a[i], b[i]);
+            else
+                printf("Beta posterior:\t a=%d, b=%d\n\n\n\n", a[i], b[i]);
             fclose(fp);
         }
-        /*output*/
-        for (int i = 1; i < line_num; i++) {
-            printf("case %d: %s\n", i, data[i - 1]);
-            printf("Likelihood(MLE): %.15f\n", p[i - 1]);
-            printf("Beta prior:\t a=%d, b=%d\n", a[i - 1], b[i - 1]);
-            printf("Beta posterior:\t a=%d, b=%d\n\n\n\n", a[i], b[i]);
-        }
-        printf("case %d: %s\n", line_num, data[line_num - 1]);
-        printf("Likelihood(MLE): %.15f\n", p[line_num - 1]);
-        printf("Beta prior:\t a=%d, b=%d\n", a[line_num - 1], b[line_num - 1]);
-        printf("Beta posterior:\t a=%d, b=%d\n", a[line_num], b[line_num]);
     }
 };
 
@@ -134,5 +132,6 @@ int main()
     load_data(PATH, &data, &line_num);
     init(line_num);
     online_learning();
+    free_mem();
     return 0;
 }
