@@ -9,7 +9,7 @@ char **data;
 int line_num = 0, print = 0;
 double marginal = 0.0;
 char *out;
-size_t line_buf_size = 8;
+size_t line_buf_size = 32;
 char *line_buf;
 FILE *f_config;
 int *a, *b;
@@ -50,15 +50,17 @@ void load_data(char *path, char ***data, int *line_num)
 {
     FILE *fp = fopen(path, "r");
     size_t buf_size = 0;
-    char *buf = malloc(buf_size);
+    char *tmp = NULL;
+
     if (!fp) {
         fprintf(stderr, "Error opening file '%s'\n", path);
         exit(-1);
     }
 
-    while (getline(&buf, &buf_size, fp) != -1)
+    while (getline(&tmp, &buf_size, fp) != -1)
         (*line_num)++;
     fseek(fp, 0, SEEK_SET);
+    free(tmp);
 
     *data = (char **) malloc((*line_num) * sizeof(char *));
     for (int i = 0; i < (*line_num); i++) {
@@ -72,9 +74,9 @@ void init(int line_num)
 {
     a = malloc((line_num + 1) * sizeof(int));
     b = malloc((line_num + 1) * sizeof(int));
-    p = malloc((line_num) * sizeof(int));
-    out = malloc(64);
-    line_buf = malloc(8 * sizeof(char));
+    p = malloc((line_num) * sizeof(double));
+    out = malloc(64 * sizeof(char));
+    line_buf = malloc(line_buf_size * sizeof(char));
     f_config = fopen("config.txt", "r");
 }
 
@@ -119,6 +121,9 @@ void online_learning()
 
 void free_mem()
 {
+    for (int i = 0; i < line_num; i++)
+        free(data[i]);
+    free(data);
     free(a);
     free(b);
     free(p);
