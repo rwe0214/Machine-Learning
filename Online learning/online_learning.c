@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define PATH "online_learning.data"
 
@@ -78,6 +80,10 @@ void init(int line_num)
     out = malloc(64 * sizeof(char));
     line_buf = malloc(line_buf_size * sizeof(char));
     f_config = fopen("config.txt", "r");
+    if (!!access("output", 0)) {
+        printf("mkdir output/ ...\n");
+        mkdir("output", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    }
 }
 
 void online_learning()
@@ -94,6 +100,10 @@ void online_learning()
 
             /*for plotting .png*/
             FILE *fp = fopen(out, "w");
+            if (!fp) {
+                fprintf(stderr, "Could not open %s\n", out);
+                exit(-1);
+            }
             int m = 0, n;
             for (n = 0; data[i - 1][n] != '\0'; n++)
                 if (data[i - 1][n] == '1')
