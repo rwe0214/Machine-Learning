@@ -12,6 +12,19 @@ double **train_class_sd;    // standard deviation
 double ***train_class_bin;  // for discrete mode
 double **predict;
 
+void progress_bar(int now, int total)
+{
+    printf("Progress bar ");
+    printf("\x1b[;32;1m[");
+    for (int pg = 0; pg < 40; pg++) {
+        if (pg < (double) now / total * 40)
+            printf("#");
+        else
+            printf("-");
+    }
+    printf("] \x1b[;36;1m%3d%%\x1b[0;m\n", now * 100 / total);
+}
+
 double gaussian(double x, double mu, double sd)
 {
     double e = exp(pow((x - mu), 2) / (2 * sd) * (-1));
@@ -108,6 +121,7 @@ double prediction(double **test,
     }
 
     for (int i = 0; i < num_test; i++) {
+        progress_bar(i, num_test);
         printf("No.%d test:\n", i + 1);
 
         double marginal = 0.0;
@@ -145,7 +159,7 @@ double prediction(double **test,
         printf("Prediction: %d, Ans: %d\n", result, target[i]);
         count += (result == target[i]) ? 1 : 0;
         printf("Error: %4.0f/%4d\n", i - count + 1, i + 1);
-        printf("\033[13A\033[K");
+        printf("\033[14A\033[K");
     }
 
     printf("\033[J");

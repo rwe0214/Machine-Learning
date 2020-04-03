@@ -2,6 +2,7 @@
 #define __NAIVE_BAYES_H
 #include <stdint.h>
 
+void progress_bar(int now, int total);
 double gaussian(double x, double mu, double sd);
 void statistic_data(double **data,
                     uint8_t *target,
