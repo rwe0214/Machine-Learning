@@ -81,7 +81,7 @@ void init(int line_num)
     line_buf = malloc(line_buf_size * sizeof(char));
     f_config = fopen("config.txt", "r");
     if (!!access("output", 0)) {
-        printf("mkdir output/ ...\n");
+        printf("mkdir output/\n");
         mkdir("output", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     }
 }

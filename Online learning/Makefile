@@ -15,3 +15,4 @@ run:
 
 clean:
 	$(RM) online_learning *.o output/*.txt output/*.png
+	rmdir output
