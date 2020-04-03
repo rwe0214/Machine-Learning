@@ -96,11 +96,15 @@ double prediction(double **test,
                   int num_class,
                   int mode)
 {
+    if (mode == 0)
+        printf("Continuous Mode:\n");
+    else
+        printf("Discrete Mode:\n");
     double count = 0.0;
     predict = (double **) malloc(num_test * sizeof(double *));
     for (int i = 0; i < num_test; i++) {
         predict[i] = (double *) malloc(num_class * sizeof(double));
-        memset(predict[i], 0, num_class);
+        memset(predict[i], 0, num_class * sizeof(double));
     }
 
     for (int i = 0; i < num_test; i++) {
@@ -126,8 +130,9 @@ double prediction(double **test,
                 predict[i][j] -= (size_feature - 1) * log(count_class[j]);
             marginal += predict[i][j];
         }
-        for (int j = 0; j < num_class; j++)
+        for (int j = 0; j < num_class; j++) {
             printf("%d: %.17f\n", j, predict[i][j] / marginal);
+        }
         int result = -1;
         double max = -99999999999999;
         for (int j = 0; j < num_class; j++) {
@@ -137,12 +142,14 @@ double prediction(double **test,
             }
         }
 
-        printf("Prediction: %d, Ans: %d\n\n", result, target[i]);
+        printf("Prediction: %d, Ans: %d\n", result, target[i]);
         count += (result == target[i]) ? 1 : 0;
-        printf("\n");
+        printf("Error: %4.0f/%4d\n", i - count + 1, i + 1);
+        printf("\033[13A\033[K");
     }
 
-    printf("Imagination of numbers in Bayesian classifier:\n");
+    printf("\033[J");
+    printf("* Imagination of numbers in Bayesian classifier\n");
     for (int i = 0; i < num_class; i++) {
         for (int j = 0; j < size_feature; j++) {
             if (j % 28 == 0)
@@ -199,10 +206,12 @@ double run_naive_bayes_classifier(double **train_data,
                                   int mode)
 {
     double ret;
+    printf("Starting Naive Bayes Classifier...\n\n");
     statistic_data(train_data, train_class, num_train, size_feature, num_class,
                    mode);
     ret = prediction(test_data, test_class, num_train, num_test, size_feature,
                      num_class, mode);
     free_NB();
+    printf("Finishing Naive Bayes Classifier...\n\n");
     return ret;
 }

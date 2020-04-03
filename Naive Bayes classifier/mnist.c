@@ -212,4 +212,5 @@ void free_mnist_data(mnist_data *data)
     free(data->train_label);
     free(data->test_image);
     free(data->test_label);
+    free(data);
 }

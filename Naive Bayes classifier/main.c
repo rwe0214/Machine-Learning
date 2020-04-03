@@ -52,13 +52,16 @@ int main()
     data = get_mnist_data();
     set_local(info, data);
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 2; i++) {
         error_rate[i] = run_naive_bayes_classifier(
             train_data, data->train_label, test_data, data->test_label,
             info->train_size, info->test_size, info->image_size,
             info->label_class_size, i);
+        printf("\n");
+    }
 
-    printf("\n\nContinuous Mode:\n\tAccurancy:  %.4f\n\terror rate: %.4f\n\n",
+    printf("=====================================\n");
+    printf("Continuous Mode:\n\tAccurancy:  %.4f\n\terror rate: %.4f\n\n",
            1 - error_rate[0], error_rate[0]);
     printf("Discrete Mode:\n\tAccurancy:  %.4f\n\terror rate: %.4f\n",
            1 - error_rate[1], error_rate[1]);
