@@ -17,3 +17,7 @@ naive_bayes_classifier
 # Online learning
 output/
 online_learning
+
+# Sequential estamator
+.out/
+sequential_estimator
