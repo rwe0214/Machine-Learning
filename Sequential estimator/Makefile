@@ -27,5 +27,5 @@ debug:
 	gdb -q ./$(OUTDIR)/$(EXE)
 
 clean:
-	rm -f $(OUTDIR)/*
-	rmdir $(OUTDIR)
+	rm -f $(OUTDIR)/* ./$(EXE) ./*.data
+	rmdir ./$(OUTDIR)
