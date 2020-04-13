@@ -123,12 +123,12 @@ std::vector<double> DataGenerator::random(int num)
 {
     std::vector<double> ret;
     if (mode == 0) {
-        double sigma = sqrt(varience);
+        double sigma = sqrt(this->varience);
         std::vector<double> d;
         for (int i = 0; i < num; i++) {
             if (i % 2 == 0)
                 d = marsaglia();
-            ret.push_back(mean + sigma * d[i % 2]);
+            ret.push_back(this->mean + sigma * d[i % 2]);
         }
     } else
         printf("This is not a random data generator\n");
