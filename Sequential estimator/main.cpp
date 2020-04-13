@@ -13,14 +13,14 @@ int main()
     /*data generator*/
     double u_0 = 3, v_0 = 5;
     vector<double> w;
-    int basis = 3;
-    for (int i = basis; i >= 0; i--)
+    int basis = 4;
+    for (int i = 0; i < basis; i++)
         w.push_back(i);
 
     DataGenerator rgen(u_0, v_0);
-    DataGenerator pgen(basis, 25, w);
+    DataGenerator pgen(basis, 1, w);
     vector<double> r = rgen.random(ITER_MAX);
-    vector<vector<double> > p = pgen.polynomial(10000);
+    vector<vector<double> > p = pgen.polynomial(ITER_MAX);
 
     ofstream myfile;
     myfile.open("randomGaussian.data");
@@ -28,9 +28,20 @@ int main()
         myfile << r.at(i) << endl;
     myfile.close();
     myfile.open("polynomialLinearModel.data");
-    for (int i = 0; i < p.size(); i++)
-        myfile << (p.at(i)).at(0) << ',' << (p.at(i)).at(1) << ','
-               << (p.at(i)).at(2) << endl;
+    for (int i = 0; i < p.size(); i++){
+        myfile << (p.at(i)).at(0) << ',';
+        myfile << (p.at(i)).at(2) << ',';
+        myfile << (p.at(i)).at(3) << ',';
+        myfile << (p.at(i)).at(4) << endl;
+    }
+    myfile.close();
+    myfile.open("polynomialLinearModelPredict.data");
+    for (int i = 0; i < p.size(); i++){
+        if((p.at(i)).at(0) < 1 && (p.at(i)).at(0) > -1){
+            myfile << (p.at(i)).at(0) << ',';
+            myfile << (p.at(i)).at(1) << endl;
+        }
+    }
     myfile.close();
 
     /*sequential estimator*/

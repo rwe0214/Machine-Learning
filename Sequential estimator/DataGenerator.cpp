@@ -90,7 +90,7 @@ std::vector<double> DataGenerator::getPolynomial()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> unid(-1.0, 1.0);
+    std::uniform_real_distribution<double> unid(-10.0, 10.0);
     double x = unid(gen);
     std::vector<double> ret(2);
 
@@ -113,6 +113,8 @@ std::vector<std::vector<double> > DataGenerator::polynomial(int num)
             ret[i].push_back(poly.at(0));
             ret[i].push_back(poly.at(1) + e.at(i));
             ret[i].push_back(poly.at(1));
+            ret[i].push_back(poly.at(1) + this->varience);
+            ret[i].push_back(poly.at(1) - this->varience);
         }
     } else
         printf("This is not a polynomial linear mode generator\n");
