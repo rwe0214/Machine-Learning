@@ -5,20 +5,20 @@
 
 #include "DataGenerator.h"
 #include "SequentialEstimator.h"
-#define ITER_MAX 50000
+#define ITER_MAX 10000
 using namespace std;
 
 int main()
 {
     /*data generator*/
-    double u_0 = 3, v_0 = 5;
+    double u_0 = 3, v_0 = 5, varience = 1.0;
     vector<double> w;
     int basis = 4;
-    for (int i = 0; i < basis; i++)
+    for (int i = 1; i <= basis; i++)
         w.push_back(i);
 
     DataGenerator rgen(u_0, v_0);
-    DataGenerator pgen(basis, 1, w);
+    DataGenerator pgen(basis, varience, w);
     vector<double> r = rgen.random(ITER_MAX);
     vector<vector<double> > p = pgen.polynomial(ITER_MAX);
 
@@ -28,12 +28,10 @@ int main()
         myfile << r.at(i) << endl;
     myfile.close();
     myfile.open("polynomialLinearModel.data");
-    for (int i = 0; i < p.size(); i++){
-        myfile << (p.at(i)).at(0) << ',';
-        myfile << (p.at(i)).at(2) << ',';
-        myfile << (p.at(i)).at(3) << ',';
-        myfile << (p.at(i)).at(4) << endl;
-    }
+    for (int i = 0; i < basis-1; i++)
+        myfile << w.at(i) << ',';
+    myfile << w.at(basis-1) << endl;
+    myfile << varience << endl;
     myfile.close();
     myfile.open("polynomialLinearModelPredict.data");
     for (int i = 0; i < p.size(); i++){
@@ -45,7 +43,7 @@ int main()
     myfile.close();
 
     /*sequential estimator*/
-    double converge = 0.0001;
+    double converge = 0.001;
     int i = 0;
     double delta_u, delta_v;
     printf("Data point source function: N(%f, %f)\n\n", u_0, v_0);

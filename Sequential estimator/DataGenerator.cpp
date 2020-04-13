@@ -90,7 +90,7 @@ std::vector<double> DataGenerator::getPolynomial()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> unid(-10.0, 10.0);
+    std::uniform_real_distribution<double> unid(-1.0, 1.0);
     double x = unid(gen);
     std::vector<double> ret(2);
 
