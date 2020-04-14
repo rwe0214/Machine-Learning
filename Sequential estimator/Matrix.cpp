@@ -78,13 +78,13 @@ Matrix Matrix::transpose()
     return m_t;
 };
 
-Matrix Matrix::min0r(unsigned rowa, unsigned cola)
+Matrix Matrix::min0r(unsigned row, unsigned col)
 {
     Matrix m(this->row_size - 1, this->col_size - 1);
     unsigned r = 0, l = 0;
     for (unsigned i = 0; i < this->row_size; i++)
         for (unsigned j = 0; j < this->col_size; j++)
-            if (i != rowa && j != cola) {
+            if (i != row && j != col) {
                 m(r, l++) = this->ele[i][j];
                 if (l == m.col_size) {
                     l = 0;
