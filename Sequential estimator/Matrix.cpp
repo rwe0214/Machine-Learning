@@ -1,7 +1,7 @@
 #include "Matrix.h"
 
-#include <cmath>
 #include <stdio.h>
+#include <cmath>
 
 Matrix::Matrix(unsigned row, unsigned col)
 {
