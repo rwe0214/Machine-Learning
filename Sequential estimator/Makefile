@@ -19,6 +19,9 @@ $(OUTDIR)/%.o: %.cpp
 
 .PHONY: all clean run debug
 
+format:
+	clang-format -i *.cpp *.h
+
 run:
 	./$(EXE)
 	python3 plot.py
@@ -27,5 +30,5 @@ debug:
 	gdb -q ./$(OUTDIR)/$(EXE)
 
 clean:
-	rm -f $(OUTDIR)/* ./$(EXE) ./*.data
-	rmdir ./$(OUTDIR)
+	rm -f $(OUTDIR)/* ./$(EXE) ./output/*.data ./output/*.png
+	rmdir ./$(OUTDIR) ./output

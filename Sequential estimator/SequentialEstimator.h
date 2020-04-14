@@ -1,3 +1,6 @@
+#ifndef __SEQUENTIALESTIMATOR_H
+#define __SEQUENTIALESTIMATOR_H
+
 class SequentialEstimator
 {
 public:
@@ -15,3 +18,5 @@ private:
     double varience;
     double n;  // numbers of data
 };
+
+#endif

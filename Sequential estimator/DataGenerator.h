@@ -1,9 +1,9 @@
+#ifndef __DATAGENERATOR_H
+#define __DATAGENERATOR_H
 #include <vector>
 /*
  * DataGenerator(mean, varience) or
  * DataGenerator(basis, varience, weight) and assume mean=0
- *
- *
  */
 class DataGenerator
 {
@@ -30,3 +30,4 @@ private:
     std::vector<double> marsaglia();
     std::vector<double> getPolynomial();
 };
+#endif

@@ -5,6 +5,7 @@
 *.data
 *.png
 .DS_Store
+.vscode
 
 # Regularized linear model regression
 output/
