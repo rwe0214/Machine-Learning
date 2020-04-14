@@ -15,7 +15,7 @@ public:
     Matrix operator*(double);
     double &operator()(const unsigned &, const unsigned &);
     Matrix transpose();
-    Matrix minor(unsigned, unsigned);
+    Matrix min0r(unsigned, unsigned);
     double determinant();
     Matrix adjugate();
     Matrix inverse();

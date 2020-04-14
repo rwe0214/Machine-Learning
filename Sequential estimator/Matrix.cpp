@@ -1,6 +1,7 @@
 #include "Matrix.h"
 
 #include <cmath>
+#include <stdio.h>
 
 Matrix::Matrix(unsigned row, unsigned col)
 {
@@ -77,13 +78,13 @@ Matrix Matrix::transpose()
     return m_t;
 };
 
-Matrix Matrix::minor(unsigned row, unsigned col)
+Matrix Matrix::min0r(unsigned rowa, unsigned cola)
 {
     Matrix m(this->row_size - 1, this->col_size - 1);
     unsigned r = 0, l = 0;
     for (unsigned i = 0; i < this->row_size; i++)
         for (unsigned j = 0; j < this->col_size; j++)
-            if (i != row && j != col) {
+            if (i != rowa && j != cola) {
                 m(r, l++) = this->ele[i][j];
                 if (l == m.col_size) {
                     l = 0;
@@ -104,9 +105,9 @@ double Matrix::determinant()
                this->ele[0][1] * this->ele[1][0];
     else {
         double sum = 0.0;
-        for (int j = 0; j < this->col_size; j++)
+        for (unsigned j = 0; j < this->col_size; j++)
             sum += (pow(-1, 0 + j) * this->ele[0][j] *
-                    (this->minor(0, j)).determinant());
+                    (this->min0r(0, j)).determinant());
         return sum;
     }
 };
@@ -116,7 +117,7 @@ Matrix Matrix::adjugate()
     Matrix cof(this->row_size, this->col_size);
     for (unsigned i = 0; i < this->row_size; i++)
         for (unsigned j = 0; j < this->col_size; j++)
-            cof(i, j) = (pow(-1, i + j) * this->minor(i, j).determinant());
+            cof(i, j) = (pow(-1, i + j) * this->min0r(i, j).determinant());
     return cof.transpose();
 };
 
