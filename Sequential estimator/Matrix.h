@@ -1,21 +1,30 @@
+#ifndef __MATRIX_H
+#define __MATRIX_H
+
 #include <vector>
 using std::vector;
 
 class Matrix{
     public:
+        Matrix(unsigned, unsigned);
         Matrix(unsigned, unsigned, double);
-        Matrix transpose();
-        Matrix inverse();
         Matrix operator+(Matrix &);
         Matrix operator-(Matrix &);
         Matrix operator*(Matrix &);
+        Matrix operator*(double);
         double& operator()(const unsigned &, const unsigned &);
-        void operator()(const unsigned &, const unsigned &, double);
+        Matrix transpose();
+        Matrix minor(unsigned, unsigned);
+        double determinant();
+        Matrix adjugate();
+        Matrix inverse();
+        void print();
         unsigned getRow();
         unsigned getCol();
         
     private:
-        unsigned row;
-        unsigned col;
+        unsigned row_size;
+        unsigned col_size;
         vector<vector<double> > ele;
 };
+#endif
