@@ -111,17 +111,17 @@ int main()
         }
         if (i > 1) {
             delta = 0.0;
-            for (unsigned i = 0; i < basis; i++)
+            for (int i = 0; i < basis; i++)
                 delta += abs(diff_u(i, 0));
         }
         if (i == 10) {
-            for (unsigned i = 0; i < basis - 1; i++)
+            for (int i = 0; i < basis - 1; i++)
                 income_10_model << blr.getPosterior().at(0)(i, 0) << ",";
             income_10_model << blr.getPosterior().at(0)(basis - 1, 0) << endl;
             income_10_model << blr.getPredict().at(1) << endl;
         }
         if (i == 50) {
-            for (unsigned i = 0; i < basis - 1; i++)
+            for (int i = 0; i < basis - 1; i++)
                 income_50_model << blr.getPosterior().at(0)(i, 0) << ",";
             income_50_model << blr.getPosterior().at(0)(basis - 1, 0) << endl;
             income_50_model << blr.getPredict().at(1) << endl;
@@ -143,7 +143,7 @@ int main()
         "=====================\n");
     myfile.close();
     myfile.open("output/bayesianLinearRegressionPredictModel.data");
-    for (unsigned i = 0; i < basis - 1; i++)
+    for (int i = 0; i < basis - 1; i++)
         myfile << blr.getPosterior().at(0)(i, 0) << ",";
     myfile << blr.getPosterior().at(0)(basis - 1, 0) << endl;
     myfile << blr.getPredict().at(1) << endl;
