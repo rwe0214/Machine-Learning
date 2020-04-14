@@ -5,13 +5,15 @@
 
 #include "DataGenerator.h"
 #include "SequentialEstimator.h"
+#include "Matrix.h"
+#include "BayesianLinearRegression.h"
 #define ITER_MAX 10000
 using namespace std;
 
 int main()
 {
     /*data generator*/
-    double u_0 = 3, v_0 = 5, varience = 1.0;
+    double u_0 = 3, v_0 = 5, varience = 1.0, b=1.0;
     vector<double> w;
     int basis = 4;
     for (int i = 1; i <= basis; i++)
@@ -64,4 +66,31 @@ int main()
     printf("[%6d] Add data point: %.15f\n", i - 1, r.at(i - 1));
     printf("\t Mean = %.15f,\t", se.getMean());
     printf("Varience = %.15f\n", se.getVarience());
+
+    /*bayesian linear regression*/
+    BayesianLinearRegression blr(basis, varience, b); 
+    Matrix diff_u(basis, 1);
+    double delta = 1;
+    i = 0;
+    converge = 0.0000001;
+    do{
+        printf("[%6d]Add data point (%.5f, %.5f):\n\n", i+1, (p.at(i)).at(0), (p.at(i)).at(1));
+        diff_u = blr.getPosterior().at(0);
+        blr.addNewData(p.at(i++));
+        diff_u = diff_u - blr.getPosterior().at(0);
+        printf("Postirior mean:\n");
+        blr.getPosterior().at(0).print();
+        printf("\nPosterior variance:\n");
+        blr.getPosterior().at(1).print();
+        printf("--------------------------------------------------\n");
+
+        if(i>1){
+            delta = 0.0;
+            for(unsigned i=0; i<basis; i++)
+                delta += abs(diff_u(i, 0));
+            delta /= basis;
+        }
+    }while((i<ITER_MAX) && delta>converge);
+
+
 }
