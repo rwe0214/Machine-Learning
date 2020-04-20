@@ -7,7 +7,7 @@ BayesianLinearRegression::BayesianLinearRegression(unsigned basis,
                                                    double b)
 {
     this->basis = basis;
-    this->a = a;
+    this->a = 1 / a;
     this->prior.push_back(Matrix(basis, 1));
     this->prior.push_back(Matrix(basis, basis));
     for (unsigned i = 0; i < this->prior.at(1).getRow(); i++)
