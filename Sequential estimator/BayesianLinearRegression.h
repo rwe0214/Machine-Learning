@@ -21,6 +21,7 @@ public:
     vector<double> getPredict();
     vector<Matrix> update(vector<double>);
     void addNewData(vector<double>);
+    vector<vector<double> > showModel();
 
 private:
     double a;

@@ -1,6 +1,7 @@
 #include "Matrix.h"
 
 #include <stdio.h>
+
 #include <cmath>
 
 Matrix::Matrix(unsigned row, unsigned col)

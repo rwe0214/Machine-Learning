@@ -112,3 +112,19 @@ void BayesianLinearRegression::addNewData(vector<double> data)
     setPosterior(update(data));
     setPrior(this->posterior);
 };
+
+vector<vector<double> > BayesianLinearRegression::showModel()
+{
+    vector<vector<double> > ret(40);
+    for (int i = 0; i < 40; i++) {
+        Matrix x(1, this->basis);
+        for (int j = 0; j < x.getCol(); j++)
+            x(0, j) = pow(-2 + (double) (0.1 * i), j);
+        Matrix x_t = x.transpose();
+        ret.at(i).push_back(x(0, 1));
+        ret.at(i).push_back((x * this->posterior.at(0))(0, 0));
+        ret.at(i).push_back(1 / this->a +
+                            (x * this->posterior.at(1) * x_t)(0, 0));
+    }
+    return ret;
+}

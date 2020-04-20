@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -74,37 +75,31 @@ int main()
     printf(
         "==================== Bayesian Linear Regression Start "
         "====================\n");
-    BayesianLinearRegression blr(basis, varience, b);
+    BayesianLinearRegression BLR(basis, varience, b);
     Matrix diff_u(basis, 1);
     double delta = 1;
     i = 0;
     converge = 0.0000001;
-    myfile.open("output/bayesianLinearRegressionPredict.data");
-    ofstream income_10, income_50;
-    ofstream income_10_model, income_50_model;
-    income_10.open("output/bayesianLinearRegressionPredict10.data");
-    income_50.open("output/bayesianLinearRegressionPredict50.data");
-    income_10_model.open("output/bayesianLinearRegressionPredictModel10.data");
-    income_50_model.open("output/bayesianLinearRegressionPredictModel50.data");
+    myfile.open("output/BLR_income.data");
+    ofstream income_10_model, income_50_model, predict_model;
+    income_10_model.open("output/BLR_PredictModel_10.data");
+    income_50_model.open("output/BLR_PredictModel_50.data");
+    predict_model.open("output/BLR_PredictModel.data");
 
     do {
-        diff_u = blr.getPosterior().at(0);
+        diff_u = BLR.getPosterior().at(0);
         myfile << p.at(i).at(0) << "," << p.at(i).at(1) << endl;
-        if (i < 10)
-            income_10 << p.at(i).at(0) << "," << p.at(i).at(1) << endl;
-        if (i < 50)
-            income_50 << p.at(i).at(0) << "," << p.at(i).at(1) << endl;
-        blr.addNewData(p.at(i++));
-        diff_u = diff_u - blr.getPosterior().at(0);
+        BLR.addNewData(p.at(i++));
+        diff_u = diff_u - BLR.getPosterior().at(0);
         if (i % (ITER_MAX / 15) == 0 && i != ITER_MAX) {
             printf("[%6d]Add data point (% .5f, % .5f):\n\n", i,
                    (p.at(i - 1)).at(0), (p.at(i - 1)).at(1));
             printf("Postirior mean:\n");
-            blr.getPosterior().at(0).print();
+            BLR.getPosterior().at(0).print();
             printf("\nPosterior variance:\n");
-            blr.getPosterior().at(1).print();
+            BLR.getPosterior().at(1).print();
             printf("\nPredict distribution ~ N(% .5f, % .5f)\n",
-                   blr.getPredict().at(0), blr.getPredict().at(1));
+                   BLR.getPredict().at(0), BLR.getPredict().at(1));
             printf(
                 "--------------------------------------------------------------"
                 "----------\n");
@@ -115,26 +110,29 @@ int main()
                 delta += abs(diff_u(i, 0));
         }
         if (i == 10) {
-            for (int i = 0; i < basis - 1; i++)
-                income_10_model << blr.getPosterior().at(0)(i, 0) << ",";
-            income_10_model << blr.getPosterior().at(0)(basis - 1, 0) << endl;
-            income_10_model << blr.getPredict().at(1) << endl;
+            vector<vector<double> > result = BLR.showModel();
+            for (int j = 0; j < 40; j++)
+                income_10_model << result.at(j).at(0) << ","
+                                << result.at(j).at(1) << ","
+                                << result.at(j).at(2) << endl;
         }
         if (i == 50) {
-            for (int i = 0; i < basis - 1; i++)
-                income_50_model << blr.getPosterior().at(0)(i, 0) << ",";
-            income_50_model << blr.getPosterior().at(0)(basis - 1, 0) << endl;
-            income_50_model << blr.getPredict().at(1) << endl;
+            vector<vector<double> > result = BLR.showModel();
+            for (int j = 0; j < 40; j++)
+                income_50_model << result.at(j).at(0) << ","
+                                << result.at(j).at(1) << ","
+                                << result.at(j).at(2) << endl;
         }
     } while ((i < ITER_MAX) && delta > 3 * converge);
+
     printf("[%6d]Add data point (%.5f, %.5f):\n\n", i, (p.at(i - 1)).at(0),
            (p.at(i - 1)).at(1));
     printf("Postirior mean:\n");
-    blr.getPosterior().at(0).print();
+    BLR.getPosterior().at(0).print();
     printf("\nPosterior variance:\n");
-    blr.getPosterior().at(1).print();
-    printf("\nPredict distribution ~ N(% .5f, % .5f)\n", blr.getPredict().at(0),
-           blr.getPredict().at(1));
+    BLR.getPosterior().at(1).print();
+    printf("\nPredict distribution ~ N(% .5f, % .5f)\n", BLR.getPredict().at(0),
+           BLR.getPredict().at(1));
     printf(
         "----------------------------------------------------------------------"
         "--\n");
@@ -142,14 +140,13 @@ int main()
         "===================== Bayesian Linear Regression End "
         "=====================\n");
     myfile.close();
-    myfile.open("output/bayesianLinearRegressionPredictModel.data");
-    for (int i = 0; i < basis - 1; i++)
-        myfile << blr.getPosterior().at(0)(i, 0) << ",";
-    myfile << blr.getPosterior().at(0)(basis - 1, 0) << endl;
-    myfile << blr.getPredict().at(1) << endl;
+
+    myfile.open("output/BLR_PredictModel.data");
+    vector<vector<double> > result = BLR.showModel();
+    for (int j = 0; j < 40; j++)
+        myfile << result.at(j).at(0) << "," << result.at(j).at(1) << ","
+               << result.at(j).at(2) << endl;
     myfile.close();
-    income_10.close();
-    income_50.close();
     income_10_model.close();
     income_50_model.close();
 }
