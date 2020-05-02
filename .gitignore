@@ -6,9 +6,10 @@
 *.png
 .DS_Store
 .vscode
+.out/
+output/
 
 # Regularized linear model regression
-output/
 linear_regression
 
 # Naive Bayes classifier
@@ -16,9 +17,10 @@ mnist/
 naive_bayes_classifier
 
 # Online learning
-output/
 online_learning
 
 # Sequential estamator
-.out/
 sequential_estimator
+
+# Logistic regression
+logistic_regression
