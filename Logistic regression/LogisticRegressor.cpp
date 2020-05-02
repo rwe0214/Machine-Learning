@@ -1,6 +1,7 @@
 #include "LogisticRegressor.h"
 
 #include <cmath>
+#include <stdio.h>
 
 #include "Matrix.h"
 
@@ -53,7 +54,7 @@ void LogisticRegressor::run()
         tmp = tmp - y;
         gradient = xt * tmp;
 
-        for (unsigned i = 0; i < this->size; i++)
+        for (unsigned i = 0; i < (unsigned)this->size; i++)
             eye(i, 0) = pow(eye(i, 0), 2);
         for (unsigned i = 0; i < d.getRowSize(); i++)
             d(i, i) = eye(i, 0);
@@ -115,7 +116,7 @@ void LogisticRegressor::setX(vector<vector<double> > data)
     this->X.resize(this->size);
     for (int i = 0; i < this->size; i++) {
         X[i].resize(3);
-        for (int j = 0; j < data[i].size(); j++)
+        for (unsigned j = 0; j < data[i].size(); j++)
             this->X[i][j] = data[i][j];
         this->X[i][2] = 1;
     }
