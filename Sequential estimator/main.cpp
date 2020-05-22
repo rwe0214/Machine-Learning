@@ -17,7 +17,7 @@ using namespace std;
 int main()
 {
     /*data generator*/
-    double u_0 = 3, v_0 = 5, varience = 3.0, b = 1.0;
+    double u_0 = 3, v_0 = 5, varience = 1.0, b = 1.0;
     vector<double> w;
     int basis = 3;
     for (int i = 1; i <= basis; i++)
