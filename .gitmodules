@@ -1,3 +1,4 @@
 [submodule "SVM/libsvm"]
 	path = SVM/libsvm
 	url = https://github.com/cjlin1/libsvm.git
+	ignore = dirty
