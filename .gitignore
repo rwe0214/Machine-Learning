@@ -24,3 +24,10 @@ sequential_estimator
 
 # Logistic regression
 logistic_regression
+
+# SVM
+__pycache__
+*.csv
+best\ param/
+model/
+result/
