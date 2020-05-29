@@ -3,6 +3,7 @@ import pandas as pd
 import libsvm.python.svmutil as svmutil
 import matplotlib.pyplot as plt
 import grid
+import os
 
 def gen_libsvm_format_data(x_data, y_data, output, isKernel=False):
     x_df = pd.read_csv(x_data, header=None, dtype=str)
@@ -27,8 +28,15 @@ def linear_RBF_kernel(u, v, g):
     rbf_x = np.exp(rbf_x)
     return linear_x + rbf_x
 
-#preparing the precomputed kernel
+#creating directory
+if not os.path.exists('./best param'):
+    os.mkdir('./best param')
+if not os.path.exists('./model'):
+    os.mkdir('./model')
+if not os.path.exists('./result'):
+    os.mkdir('./result')
 
+#preparing the precomputed kernel
 print('preparing the precomputed kernel...')
 x_train = np.genfromtxt('dataset/X_train.csv', delimiter=',')
 x_test = np.genfromtxt('dataset/X_test.csv', delimiter=',')
@@ -38,7 +46,6 @@ np.savetxt('dataset/X_train_precomputed.csv', x_train_precomputed, fmt='%f', del
 np.savetxt('dataset/X_test_precomputed.csv', x_test_precomputed, fmt='%f', delimiter=',')
 
 #convert to libsvm-format
-
 print('converting to libsvm-format...')
 gen_libsvm_format_data('dataset/X_train_precomputed.csv', 'dataset/Y_train.csv', 'train_precomputed.csv', isKernel=True)
 gen_libsvm_format_data('dataset/X_test_precomputed.csv', 'dataset/Y_test.csv', 'test_precomputed.csv', isKernel=True)
@@ -55,7 +62,6 @@ prob_precomputed = svmutil.svm_problem(y1, x_train_precomputed, isKernel=True)
 
 
 # grid search for the best parameters
-
 print('grid searching...')
 grid_search = {
         'linear' : '-t 0 -log2c -5,15,2',
@@ -85,7 +91,6 @@ for i in range(len(kernel_tab)):
     kernel_tab[i].to_csv('best param/'+kernel[i]+'.csv')
     print(kernel[i] + ':', end=' ')
     print(best_param[i])
-
 
 '''
 linear kernel:      Best c=0.03125, rate=97.2%
@@ -187,3 +192,4 @@ ytick1.legend(loc='upper left')
 ytick1.set_xlabel('kernel type')
 plt.savefig('result/results.png')
 plt.show()
+
