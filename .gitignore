@@ -31,3 +31,5 @@ __pycache__
 best\ param/
 model/
 result/
+
+#Kernel K-means
