@@ -39,8 +39,8 @@ def visualizer(record, save_path, figsize=(100,100,4)):
         
 def merge_gifs(gifs, max_fram, id, method):
     gif = []
-    for i in range(len(gifs)):
-        gif.append(imageio.get_reader('output/'+gifs[i]))
+    for i in range(1, len(gifs)):
+        gif.append(imageio.get_reader('output/'+gifs[i]+'.gif'))
 
     new_gif = imageio.get_writer('output/image'+str(id)+'_'+method+'.gif')
     
@@ -111,6 +111,6 @@ for i in range(2):
             print('faster.....................[\033[95munnormalize\033[0m]')
         show_vectors_by_clusters(eigenvectors1, record_norm[-1], 'output/'+gif_path[(i*2)][j]+'.png')
         show_vectors_by_clusters(eigenvectors2, record_ratio[-1], 'output/'+gif_path[(i*2)+1][j]+'.png')
-        
+
     merge_gifs(gif_path[(i*2)], max_fram, i+1, 'normalize')
     merge_gifs(gif_path[(i*2)+1], max_fram, i+1, 'unnormalize')
