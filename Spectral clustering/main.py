@@ -95,7 +95,7 @@ for i in range(2):
     similarity = rbf(spatial_data, spatial_data) * rbf(color_data, color_data)
 
     max_fram = 0
-    for j in range(1, 3):
+    for j in range(3):
         sc1 = spectral_clustering(similarity, k=3+j, normalize=True, keep_log=True)
         sc2 = spectral_clustering(similarity, k=3+j, normalize=False, keep_log=True)
 
@@ -114,3 +114,4 @@ for i in range(2):
 
     merge_gifs(gif_path[(i*2)], max_fram, i+1, 'normalize')
     merge_gifs(gif_path[(i*2)+1], max_fram, i+1, 'unnormalize')
+
