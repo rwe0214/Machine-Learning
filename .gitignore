@@ -33,3 +33,7 @@ model/
 result/
 
 #Kernel K-means
+
+#Embedding
+Yale_Face_Database/
+*.sh
