@@ -7,6 +7,8 @@ from KNN import KNN
 DATASET_DIR = './Yale_Face_Database/'
 TRAIN_DIR = DATASET_DIR + 'Training/'
 TEST_DIR = DATASET_DIR + 'Testing/'
+if not os.path.exists('./output'):
+    os.mkdir('./output')
 
 train_faces, train_labels = read_faces(TRAIN_DIR)
 test_faces, test_labels = read_faces(TEST_DIR)
@@ -16,7 +18,10 @@ print('PCA')
 pca = PCA(train_faces, k=25)
 pca_space, W = pca.run()
 
-random_faces = np.vstack([train_faces[r] for r in np.random.randint(0, train_faces.shape[0], size=10)])
+random_faces = np.vstack([
+    train_faces[r]
+    for r in np.random.randint(0, train_faces.shape[0], size=10)
+])
 reconstruct_faces = np.matmul(np.matmul(random_faces, W), W.T)
 
 show_faces(random_faces, '10_random_faces.png')
@@ -34,7 +39,8 @@ correct = 0
 for i in range(len(predict)):
     if predict[i] == test_labels[i]:
         correct += 1
-print('Face-reconition accuracy: {}/{} = {:.2f}%'.format(correct, len(predict), correct/len(predict)*100.00))
+print('Face-reconition accuracy: {}/{} = {:.2f}%'.format(
+    correct, len(predict), correct / len(predict) * 100.00))
 
 #kernel PCA
 print('\nKernel PCA')
@@ -46,8 +52,8 @@ for idx, kernel in enumerate(kernel_info):
 
     kpca = PCA(K_train, k=25, is_kernel=True)
     train_space, alpha = kpca.run()
-    
-    NM1 = np.ones(K_test_train.shape)/K_train.shape[0]
+
+    NM1 = np.ones(K_test_train.shape) / K_train.shape[0]
     test_space = np.matmul(K_test_train - np.matmul(NM1, K_train), alpha)
 
     knn = KNN(train_space, test_space, train_labels, k=5)
@@ -56,7 +62,9 @@ for idx, kernel in enumerate(kernel_info):
     for i in range(len(predict)):
         if predict[i] == test_labels[i]:
             correct += 1
-    print('({}) Face-reconition accuracy: {}/{} = {:.2f}%'.format(kernel.__name__, correct, len(predict), correct/len(predict)*100.00))
+    print('({}) Face-reconition accuracy: {}/{} = {:.2f}%'.format(
+        kernel.__name__, correct, len(predict),
+        correct / len(predict) * 100.00))
 
 #LDA
 print('\nLDA')
@@ -78,4 +86,28 @@ correct = 0
 for i in range(len(predict)):
     if predict[i] == test_labels[i]:
         correct += 1
-print('Face-reconition accuracy: {}/{} = {:.2f}%'.format(correct, len(predict), correct/len(predict)*100.00))
+print('Face-reconition accuracy: {}/{} = {:.2f}%'.format(
+    correct, len(predict), correct / len(predict) * 100.00))
+
+#kernel LDA
+print('\nKernel LDA')
+kernel_info = [rbf, polynomial, linear]
+
+for idx, kernel in enumerate(kernel_info):
+    K_train = kernel(train_faces, train_faces)
+    K_test_train = kernel(test_faces, train_faces)
+
+    klda = LDA(K_train, np.array(train_labels), k=25, is_kernel=True)
+    train_space, alpha = klda.run()
+
+    test_space = np.matmul(K_test_train, alpha)
+
+    knn = KNN(train_space, test_space, train_labels, k=5)
+    predict = knn.run()
+    correct = 0
+    for i in range(len(predict)):
+        if predict[i] == test_labels[i]:
+            correct += 1
+    print('({}) Face-reconition accuracy: {}/{} = {:.2f}%'.format(
+        kernel.__name__, correct, len(predict),
+        correct / len(predict) * 100.00))
