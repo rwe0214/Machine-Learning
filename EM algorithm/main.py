@@ -4,9 +4,8 @@ import random
 import numpy as np
 from matplotlib import pyplot as plt
 import math
-from IPython.display import Markdown,display,clear_output
 
-train_dataset = mnist.load_MNIST('mnist/train-images-idx3-ubyte', 'mnist/train-labels-idx1-ubyte', bins=2)
+train_dataset = mnist.load_MNIST('../dataset/mnist/train-images-idx3-ubyte', '../dataset/mnist/train-labels-idx1-ubyte', bins=2)
 
 #check if mnist_loader works
 k = random.randint(0, train_dataset.images_infos[0])

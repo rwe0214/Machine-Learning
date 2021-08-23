@@ -15,10 +15,10 @@
 #define NUM_MNIST_TEST 10000
 #define SIZE_MNIST 784  // 28*28
 
-#define PATH_MNISTTRAIN_LABEL "./dataset/mnist/train-labels-idx1-ubyte"
-#define PATH_MNISTTRAIN_IMAGE "./dataset/mnist/train-images-idx3-ubyte"
-#define PATH_MNISTTEST_LABEL "./dataset/mnist/t10k-labels-idx1-ubyte"
-#define PATH_MNISTTEST_IMAGE "./dataset/mnist/t10k-images-idx3-ubyte"
+#define PATH_MNISTTRAIN_LABEL "../dataset/mnist/train-labels-idx1-ubyte"
+#define PATH_MNISTTRAIN_IMAGE "../dataset/mnist/train-images-idx3-ubyte"
+#define PATH_MNISTTEST_LABEL "../dataset/mnist/t10k-labels-idx1-ubyte"
+#define PATH_MNISTTEST_IMAGE "../dataset/mnist/t10k-images-idx3-ubyte"
 
 #include <stddef.h>
 #include <stdint.h>
